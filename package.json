@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "sequelize": "^4.31.2"
   },
   "devDependencies": {},
   "scripts": {
