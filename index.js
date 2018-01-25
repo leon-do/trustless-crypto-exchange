@@ -3,29 +3,26 @@ const database = require('./database.js')
 init()
 async function init() {
     try {
-        /* 01000000011e623a780d44f78b1b52c9b93fde1599e5a8fcdde9edeed9066d893f6c96b675020000006a473... */
-        const signedTransaction = await btc.signTransaction(1, 'h4sh', '0xtoAddress', 1515812044411)
-        console.log('signedTransaction =', signedTransaction)
+        /**
+         * getTransactionData returns
+         {
+            hash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+            sell: {
+                coin: 'BTC',
+                address: 'mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU'
+                amount: 0.1,
+            },
+            buy: {
+                coin: 'ETH',
+                address: '0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066'
+                amount: 0.5,
+            }
+         }
 
-        /* 75b6966c3f896d06d9eeede9ddfca8e59915de3fb9c9521b8bf7440d783a621e */
-        const transactionNumber = await btc.broadcastTransaction(signedTransaction)
-        console.log('transactionNumber =', transactionNumber)
-
-        /*
-        {  
-           hash:'5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
-           sell:{  
-              coin:'BTC',
-              address:'53877cd6bcb72bb71653b503e9ecce05c629d16d',
-              amount:0.00012223
-           },
-           buy:{  
-              coin:'ETH',
-              address:'0x1234',
-              amount:'0.5'
-           }
-        }
+         sell is the amount the seller puts up. I'm sending 0.1 BTC to your BTC address at mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
+         buy is the amount the seller wants. I want 0.5 ETH to my ETH address at 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
         */
+        const transactionNumber = '22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c'
         const transactionData = await btc.getTransactionData(transactionNumber)
         console.log('transactionData =', transactionData)
 
