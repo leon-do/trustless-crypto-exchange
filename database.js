@@ -1,64 +1,135 @@
-const sequelize = require('sequelize')
+const Sequelize = require('sequelize')
+const sequelize = new Sequelize('myDatabase', 'root', 'root', {
+    host: 'localhost',
+    dialect: 'mysql',
+});
+const User = sequelize.define('myTable', {
+    hash: Sequelize.STRING,
+    buyerTransactionNumber: Sequelize.STRING,
+    sellerTransactionNumber: Sequelize.STRING
+});
 
 module.exports = {
-
-    save: (_hash, _transactionNumber) => {
-        return new Promise((resolve, reject) => {
+    save: async (_hash, _transactionNumber) => {
             /*
-            const buyerTransactionNumber = select buyer where hash = _hash
-            const sellerTransactionNumber = select seller where hash = _hash
+            row = {
+              id: 1,
+              hash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+              buyerTransactionNumber: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+              sellerTransactionNumber: '66666898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+              createdAt: 2018-01-25T05:38:40.000Z,
+              updatedAt: 2018-01-25T05:38:40.000Z
+            }
+
+            or
+
+            row = {}
+
+             */
+            const row = await getRow(_hash)
 
             // if the transaction is new, then insert new row
-            if (!buyerTransactionNumber && !sellerTransactionNumber){
-                insert new row
-                resolve(true)
+            if (!row.sellerTransactionNumber && !row.buyerTransactionNumber){
+                const saveStatus = await insertSellerTransactionNumber(_hash, _transactionNumber)
+                return saveStatus // true | false
             }
 
             // if the there is a seller && no buyer, then insert buyer
-            if (sellerTransactionNumber && _transactioniNumber !== buyerTransactionNumber){
-                insert _transactionNumber to buyer column
-                resolve(true)
+            if (row.sellerTransactionNumber && !row.buyerTransactionNumber && row.sellerTransactionNumber !== _transactionNumber){
+                const saveStatus = await insertBuyerTransactionNumber(_hash, _transactionNumber)
+                return saveStatus // true | false
             }
 
-            reject('could not save. verify hash and transaction number')
-
-             */
-            resolve(true)
-
-            // TODO error handling
-        })
     },
 
-    getTransactionStatus: (_hash) => {
-        return new Promise((resolve, reject) => {
-            /*
+    getTransactionStatus: async (_hash) => {
+        const row = await getRow(_hash)
 
-            const sellerTransactionNumber = select seller where id = _hash
-            const buyerTransactionNumber = select buyer where id = _hash
-            if (sellerTransactionNumber && buyerTransactionNumber){
-                resolve({
-                    seller: true,
-                    buyer: true
-                })
-            } else if (buyerTransactionNumber) {
-                resolve({
-                    seller: true,
-                    buyer: false
-                })
-            } else {
-                resolve({
-                    seller: false,
-                    buyer: false
-                })
-            }
-             */
-
+        if (row.sellerTransactionNumber && row.buyerTransactionNumber){
             resolve({
                 seller: true,
                 buyer: true
             })
+        } else if (row.buyerTransactionNumber) {
+            resolve({
+                seller: true,
+                buyer: false
+            })
+        } else {
+            resolve({
+                seller: false,
+                buyer: false
+            })
+        }
 
-            // TODO error handling
-        })
     }
+}
+
+function insertBuyerTransactionNumber(_hash, _transactionNumber){
+    return new Promise((resolve, reject) => {
+        User
+        .update({
+            buyerTransactionNumber: _transactionNumber,
+        }, {
+            where: {hash: _hash}
+        })
+        .then(() => {
+            resolve(true)
+        })
+        .catch(error => {
+            reject(error)
+        })
+    })
+}
+
+
+function insertSellerTransactionNumber(_hash, _transactionNumber){
+    return new Promise ((resolve, reject) => {
+        sequelize
+        .sync()
+        .then(() => {
+            User.create({
+                hash: _hash,
+                sellerTransactionNumber: _transactionNumber
+            })
+        })
+        .then(() => {
+            resolve(true)
+        })
+        .catch(error => {
+            reject(error)
+        })
+    })
+}
+
+/*
+SELECT * WHERE hash = _hash
+
+returns either:
+
+{ id: 1,
+  hash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+  buyerTransactionNumber: 'buyertxxxxxx',
+  sellerTransactionNumber: 'sellertxxxxxx',
+  createdAt: 2018-01-25T05:38:40.000Z,
+  updatedAt: 2018-01-25T05:38:40.000Z }
+
+or
+
+{}
+ */
+function getRow(_hash){
+    return new Promise(resolve => {
+        User
+        .find({
+            where: {hash: _hash}
+        })
+        .then(data => {
+            try {
+                resolve(data.dataValues)
+            } catch (error) {
+                resolve({})
+            }
+        })
+    })
 }

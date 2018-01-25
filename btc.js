@@ -41,7 +41,7 @@ module.exports = {
 }
 
 /**
- * @param transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
+ * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
  * @returns the coin name, address and amount that the seller put up
     {
         coin: 'BTC',
@@ -49,9 +49,9 @@ module.exports = {
         amount: 0.1
     }
  */
-function parseSell(transactionNumber){
+function parseSell(_transactionNumber){
     return new Promise((resolve, reject) => {
-        request(`https://testnet-api.smartbit.com.au/v1/blockchain/tx/${transactionNumber}`, (err, response, body) => {
+        request(`https://testnet-api.smartbit.com.au/v1/blockchain/tx/${_transactionNumber}`, (err, response, body) => {
             if (err) {reject(err)}
             try {
                 const data = JSON.parse(response.body)
@@ -71,12 +71,12 @@ function parseSell(transactionNumber){
 
 
 /**
- * @param transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
+ * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
  * @return hash from HTLC script
  */
-function parseHash(transactionNumber){
+function parseHash(_transactionNumber){
     return new Promise((resolve, reject) => {
-        request(`https://testnet-api.smartbit.com.au/v1/blockchain/tx/${transactionNumber}`, (err, response, body) => {
+        request(`https://testnet-api.smartbit.com.au/v1/blockchain/tx/${_transactionNumber}`, (err, response, body) => {
             if (err) {reject(err)}
             try {
                 const data = JSON.parse(response.body)
@@ -91,14 +91,14 @@ function parseHash(transactionNumber){
 }
 
 /**
- * @param transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
+ * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
  * @return the coin name, address and amount that the seller requests
  * @example ETH_0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066_0.5
  *  the seller wants 0.5 ETH send to this address 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
  */
-function parseBuy(transactionNumber) {
+function parseBuy(_transactionNumber) {
     return new Promise((resolve, reject) => {
-        request(`https://testnet-api.smartbit.com.au/v1/blockchain/tx/${transactionNumber}`, (err, response, body) => {
+        request(`https://testnet-api.smartbit.com.au/v1/blockchain/tx/${_transactionNumber}`, (err, response, body) => {
             if (err) {reject(err)}
             try {
                 const data = JSON.parse(response.body)
@@ -120,13 +120,13 @@ function parseBuy(transactionNumber) {
 
 /**
  * converts hex to string
- * @param hex
+ * @param _hex
  * @returns {string}
  */
-function hexToString (hex) {
-    var string = '';
-    for (var i = 0; i < hex.length; i += 2) {
-      string += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+function hexToString (_hex) {
+    let string = ''
+    for (let i = 0; i < _hex.length; i += 2) {
+      string += String.fromCharCode(parseInt(_hex.substr(i, 2), 16));
     }
     return string;
 }
