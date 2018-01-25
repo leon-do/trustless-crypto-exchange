@@ -22,7 +22,7 @@ async function init() {
          sell is the amount the seller puts up. I'm sending 0.1 BTC to your BTC address at mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
          buy is the amount the seller wants. I want 0.5 ETH to my ETH address at 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
         */
-        const transactionNumber = '22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c'
+        const transactionNumber = '369e70fb680fe8578a09d1ccb193f1d9cec5a75e4532bd9df93ea474a29ffba5'
         const transactionData = await btc.getTransactionData(transactionNumber)
         console.log('transactionData =', transactionData)
 
