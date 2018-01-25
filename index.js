@@ -34,6 +34,7 @@ async function init() {
         const transactionStatus = await database.getTransactionStatus(transactionData.hash)
         console.log('transactionStatus =', transactionStatus)
 
+        /* if contract/transaction exsits on both chains */
         if (transactionStatus.seller && transactionStatus.buyer){
             console.log('seller can safely reveal the key')
         } else if (transactionStatus.seller){
