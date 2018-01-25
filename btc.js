@@ -1,26 +1,31 @@
+/**
+ getTransactionData returns
+
+ {
+    hash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+    sell: {
+        coin: 'BTC',
+        address: 'mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU'
+        amount: 0.1,
+    },
+    buy: {
+        coin: 'ETH',
+        address: '0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066'
+        amount: 0.5,
+    }
+ }
+
+ sell is the amount the seller puts up.
+    example: I'm sending 0.1 BTC to your BTC address at mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
+
+ buy is the amount the seller wants.
+    example: I want 0.5 ETH to my ETH address at 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
+ */
+
 const request = require('request')
 
 module.exports = {
 
-    /**
-     * getTransactionData returns
-     {
-        hash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
-        sell: {
-            coin: 'BTC',
-            address: 'mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU'
-            amount: 0.1,
-        },
-        buy: {
-            coin: 'ETH',
-            address: '0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066'
-            amount: 0.5,
-        }
-     }
-
-     sell is the amount the seller puts up. I'm sending 0.1 BTC to your BTC address at mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
-     buy is the amount the seller wants. I want 0.5 ETH to my ETH address at 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
-     */
     getTransactionData: async (_transactionNumber) => {
         const buy = await parseBuy(_transactionNumber)
         const hash = await parseHash(_transactionNumber)
