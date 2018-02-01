@@ -1,15 +1,61 @@
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize('myDatabase', 'root', 'root', {
+const sequelize = new Sequelize('mydatabase', 'root', 'root', {
     host: 'localhost',
     dialect: 'mysql',
-});
-const User = sequelize.define('myTable', {
+})
+const User = sequelize.define('mytable', {
     hash: Sequelize.STRING,
     buyerTransactionNumber: Sequelize.STRING,
     sellerTransactionNumber: Sequelize.STRING
-});
+})
+
+
 
 module.exports = {
+
+
+    // select * where buyerTransactionNumber is null
+    getIncompleteTransactions: () => {
+       return new Promise(resolve => {
+            User
+            .find({
+                where: {buyerTransactionNumber: null}
+            })
+            .then(data => {
+                try {
+                    resolve(data.dataValues)
+                } catch (error) {
+                    resolve({})
+                }
+            })
+        })
+    },
+
+
+
+
+    // select * where buyerTransactionNumber is NOT null
+    getCompleteTransactions: () => {
+        return new Promise(resolve => {
+            User
+            .find({
+                where: {
+                    buyerTransactionNumber: {$ne :null} 
+                }
+
+            })
+            .then(data => {
+                try {
+                    resolve(data.dataValues)
+                } catch (error) {
+                    resolve({})
+                }
+            })
+        })
+    },
+
+
+    // if save is succesful, this will return true
     save: async (_hash, _transactionNumber) => {
             /*
             row = {
@@ -46,23 +92,25 @@ module.exports = {
         const row = await getRow(_hash)
 
         if (row.sellerTransactionNumber && row.buyerTransactionNumber){
-            resolve({
+            return({
                 seller: true,
                 buyer: true
             })
-        } else if (row.buyerTransactionNumber) {
-            resolve({
+        } else if (row.sellerTransactionNumber) {
+            return({
                 seller: true,
                 buyer: false
             })
         } else {
-            resolve({
+            return({
                 seller: false,
                 buyer: false
             })
         }
 
-    }
+    },
+
+
 }
 
 function insertBuyerTransactionNumber(_hash, _transactionNumber){
