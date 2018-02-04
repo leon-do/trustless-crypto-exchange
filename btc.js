@@ -15,6 +15,10 @@
     }
  }
 
+ OR
+
+ false (this means this is not a bitcoin transaction number)
+
  sell is the amount the seller puts up.
     example: I'm sending 0.1 BTC to your BTC address at mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
 
@@ -27,15 +31,20 @@ const request = require('request')
 module.exports = {
 
     getTransactionData: async (_transactionNumber) => {
-        const buy = await parseBuy(_transactionNumber)
-        const hash = await parseHash(_transactionNumber)
-        const sell = await parseSell(_transactionNumber)
-        const transactionData = {
-            hash: hash,
-            sell: sell,
-            buy: buy
+        try {
+            const buy = await parseBuy(_transactionNumber)
+            const hash = await parseHash(_transactionNumber)
+            const sell = await parseSell(_transactionNumber)
+            const transactionData = {
+                hash: hash,
+                sell: sell,
+                buy: buy
+            }
+            return transactionData
+        } catch (e) {
+            console.error(e)
+            return false
         }
-        return transactionData
     }
 
 }
@@ -92,7 +101,12 @@ function parseHash(_transactionNumber){
 
 /**
  * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
- * @return the coin name, address and amount that the seller requests
+ * @return 
+    {
+        coin: 'ETH',
+        address: '0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066',
+        amount: 0.5
+    }
  * @example ETH_0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066_0.5
  *  the seller wants 0.5 ETH send to this address 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
  */

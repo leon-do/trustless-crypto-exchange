@@ -22,17 +22,30 @@ async function init() {
             }
          }
 
+         OR
+
+        false (this means this is not a bitcoin transaction number)
+
         sell is the amount the seller puts up. I'm sending 0.1 BTC to your BTC address at mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
         buy is the amount the seller wants. I want 0.5 ETH to my ETH address at 0xc70103eddcA6cDf02952365bFbcf9A4A76Cd2066
         */
-        
         const transactionNumber = '369e70fb680fe8578a09d1ccb193f1d9cec5a75e4532bd9df93ea474a29ffba5'
-        const transactionData = await btc.getTransactionData(transactionNumber)
-        console.log('transactionData =', transactionData)
+
+        let transactionData;
+        if (await btc.getTransactionData(transactionNumber)){
+            transactionData = await btc.getTransactionData(transactionNumber)
+            console.log(`${transactionData} is valid bitcoin transaction number`)
+        } else if (await eth.getTransactionData(transactionNumber)) {
+            transactionData = await eth.getTransactionData(transactionNumber)
+            console.log(`${transactionData} is valid ethereum transaction number`)
+        } else {
+            return false
+            console.log(`${transactionData} is Not a valid transaction number`)
+        }
+
 
         /* true | false */
         // const save = await database.save(transactionData.hash, transactionNumber)
-        const save = await database.save('hash1', 'seller1')
         console.log('save =', save)
 
         /* { seller: true | false, buyer: true | false } */
