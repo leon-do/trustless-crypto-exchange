@@ -57,9 +57,6 @@ module.exports = {
 
 }
 
-
-
-
 /**
  * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
  * @return hash from HTLC script
