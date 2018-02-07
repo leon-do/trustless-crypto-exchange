@@ -28,7 +28,9 @@
 
 const request = require('request')
 const Web3 = require('web3')
+// connected to testnet
 const web3 = new Web3('https://rinkeby.infura.io/JFmo08S7333uGWXAhsyP')
+// https://github.com/leon-do/BTC-to-ETH/blob/master/ETH/HTLC.sol
 const abi = [{"constant":true,"inputs":[],"name":"hash","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lockTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"toAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"key","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_key","type":"string"}],"name":"checkKey","outputs":[{"name":"","type":"string"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"fromAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"dataString","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"startTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"fromValue","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":true,"stateMutability":"payable","type":"constructor"}]
 
 module.exports = {
@@ -63,8 +65,12 @@ module.exports = {
  * @return hash from HTLC script
  */
 async function parseHash(contract) {
-    const hash = await contract.methods.hash().call()
-    return hash
+    try {
+        const hash = await contract.methods.hash().call()
+        return hash
+    } catch (error) {
+        return error
+    }
 }
 
 /**
@@ -77,13 +83,17 @@ async function parseHash(contract) {
     }
  */
 async function parseSell(contract) {
-    const coin = 'ETH'
-    const address = await contract.methods.toAddress().call()
-    const amount = await contract.methods.fromValue().call() / 1000000000000000000
-    return {
-        coin: coin,
-        address: address,
-        amount: amount
+    try {
+        const coin = 'ETH'
+        const address = await contract.methods.toAddress().call()
+        const amount = await contract.methods.fromValue().call() / 1000000000000000000
+        return {
+            coin: coin,
+            address: address,
+            amount: amount
+        }
+    } catch (error) {
+        return error
     }
 }
 
@@ -98,13 +108,18 @@ async function parseSell(contract) {
  *  the seller wants 0.1 BTC send to this address mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
  */
 async function parseBuy(contract){
-    const dataString = await contract.methods.dataString().call()
-    const dataArray = dataString.split('_')
-    const buy = {
-        coin: dataArray[0],
-        address: dataArray[1],
-        amount: dataArray[2]
+    try {
+        const dataString = await contract.methods.dataString().call()
+        const dataArray = dataString.split('_')
+        const buy = {
+            coin: dataArray[0],
+            address: dataArray[1],
+            amount: dataArray[2]
+        }
+        return buy
+    } catch (error) {
+        return error
     }
-    return buy
+
 }
 
