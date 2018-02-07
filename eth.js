@@ -63,7 +63,8 @@ module.exports = {
  */
 async function parseHash(contract) {
     try {
-        const hash = await contract.methods.hash().call()
+        const hashString = await contract.methods.hash().call()
+        const hash = hashString.slice(2)
         return hash
     } catch (error) {
         return error
