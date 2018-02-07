@@ -27,14 +27,20 @@
  */
 
 const request = require('request')
+const Web3 = require('web3')
+const web3 = new Web3('https://rinkeby.infura.io/JFmo08S7333uGWXAhsyP')
+const abi = [{"constant":true,"inputs":[],"name":"hash","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lockTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"toAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"key","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_key","type":"string"}],"name":"checkKey","outputs":[{"name":"","type":"string"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"fromAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"dataString","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"startTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"fromValue","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":true,"stateMutability":"payable","type":"constructor"}]
 
 module.exports = {
 
-    getTransactionData: async (_transactionNumber) => {
+    getTransactionData: async (address) => {
+
+        const contract = new web3.eth.Contract(abi, address)
+
         try {
-            const buy = await parseBuy(_transactionNumber)
-            const hash = await parseHash(_transactionNumber)
-            const sell = await parseSell(_transactionNumber)
+            const buy = await parseBuy(contract)
+            const hash = await parseHash(contract)
+            const sell = await parseSell(contract)
             const transactionData = {
                 hash: hash,
                 sell: sell,
@@ -49,6 +55,18 @@ module.exports = {
 
 }
 
+
+
+
+/**
+ * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
+ * @return hash from HTLC script
+ */
+async function parseHash(contract) {
+    const hash = await contract.methods.hash().call()
+    return hash
+}
+
 /**
  * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
  * @returns the coin name, address and amount that the seller put up
@@ -58,23 +76,15 @@ module.exports = {
         amount: 0.5
     }
  */
-function parseSell(_transactionNumber){
-    return new Promise((resolve, reject) => {
-
-
-    })
-}
-
-
-/**
- * @param _transactionNumber example: 22ab5e9b703c0d4cb6023e3a1622b493adc8f83a79771c83a73dfa38ef35b07c
- * @return hash from HTLC script
- */
-function parseHash(_transactionNumber){
-    return new Promise((resolve, reject) => {
-
-
-    })
+async function parseSell(contract) {
+    const coin = 'ETH'
+    const address = await contract.methods.toAddress().call()
+    const amount = await contract.methods.fromValue().call() / 1000000000000000000
+    return {
+        coin: coin,
+        address: address,
+        amount: amount
+    }
 }
 
 /**
@@ -87,9 +97,14 @@ function parseHash(_transactionNumber){
     }
  *  the seller wants 0.1 BTC send to this address mkeEZN3BDHmcAeGTWPquq65QW5dHoxrgdU
  */
-function parseBuy(_transactionNumber) {
-    return new Promise((resolve, reject) => {
-
-
-    })
+async function parseBuy(contract){
+    const dataString = await contract.methods.dataString().call()
+    const dataArray = dataString.split('_')
+    const buy = {
+        coin: dataArray[0],
+        address: dataArray[1],
+        amount: dataArray[2]
+    }
+    return buy
 }
+
